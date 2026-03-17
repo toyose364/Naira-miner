@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naira Mine | AI Google Studio</title>
+    <style>
+        :root {
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --black: #0a0a0a;
+            --card-bg: #1e1e1e;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--black);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        nav {
+            width: 260px;
+            background-color: #000;
+            border-right: 1px solid var(--dark-gold);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo-area {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo-area h1 {
+            color: var(--gold);
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+
+        .ai-badge {
+            font-size: 10px;
+            background: #4285F4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 20px 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            padding: 15px 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+            color: #ccc;
+        }
+
+        nav ul li:hover, nav ul li.active-link {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
+            color: var(--gold);
+            border-left: 4px solid var(--gold);
+        }
+
+        /* Main Content Area */
+        main {
+            margin-left: 260px;
+            padding: 40px;
+            width: 100%;
+        }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .header-title {
+            border-bottom: 2px solid var(--gold);
+            display: inline-block;
+            margin-bottom: 30px;
+            padding-bottom: 5px;
+        }
+
+        /* Dashboard Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .card h3 { color: var(--gold); margin: 0 0 15px 0; font-size: 16px; text-transform: uppercase; }
+        .card .value { font-size: 32px; font-weight: bold; }
+
+        /* Mining Section */
+        .mining-container {
+            text-align: center;
+            padding: 50px;
+        }
+
+        #timer {
+            font-size: 48px;
+            font-family: monospace;
+            color: var(--gold);
+            margin: 20px 0;
+        }
+
+        .btn {
+            background: var(--gold);
+            color: black;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        /* Forms */
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            background: #111;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        input:focus { border-color: var(--gold); outline: none; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; color: var(--gold); padding: 15px; border-bottom: 1px solid #333; }
+        td { padding: 15px; border-bottom: 1px solid #222; }
+
+        /* Internet Error Overlay */
+        #offline-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="offline-overlay">
+        <h2 style="color: var(--gold);">CONNECTION LOST</h2>
+        <p>Naira Mine requires an active internet connection to synchronize with AI Studio.</p>
+    </div>
+
+    <nav>
+        <div class="logo-area">
+            <h1>NAIRA MINE</h1>
+            <span class="ai-badge">By AI Google Studio</span>
+        </div>
+        <ul>
+            <li class="active-link" onclick="switchTab(this, 'dashboard')">Dashboard</li>
+            <li onclick="switchTab(this, 'mining')">Mining</li>
+            <li onclick="switchTab(this, 'referrals')">Referrals</li>
+            <li onclick="switchTab(this, 'withdrawal')">Withdrawal</li>
+            <li onclick="switchTab(this, 'leaderboard')">Leaderboard</li>
+        </ul>
+    </nav>
+
+    <main>
+        <div id="dashboard" class="section active">
+            <h2 class="header-title">System Overview</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Mined Earnings</h3>
+                    <div class="value"><span id="display-gold">0</span> <small style="font-size: 14px;">GOLD</small></div>
+                </div>
+                <div class="card">
+                    <h3>Total Balance</h3>
+                    <div class="value">₦ <span id="display-naira">0.00</span></div>
+                </div>
+                <div class="card">
+                    <h3>Total Deposit</h3>
+                    <div class="value">₦ 0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mining" class="section">
+            <h2 class="header-title">Cloud Mining Rig</h2>
+            <div class="card mining-container">
+                <p>Status: <span id="mine-status" style="color:var(--gold)">Ready</span></p>
+                <div id="timer">24:00:00</div>
+                <button id="mineBtn" class="btn" onclick="startMining()">ACTIVATE MINER</button>
+                <p style="margin-top: 20px; color: #888;">Expected Reward: 500 GOLD (₦150.00)</p>
+            </div>
+        </div>
+
+        <div id="referrals" class="section">
+            <h2 class="header-title">Referral Program</h2>
+            <div class="card">
+                <h3>Your Unique Link</h3>
+                <input type="text" id="refLink" readonly>
+                <div class="grid" style="margin-top: 20px;">
+                    <div>
+                        <p>Total Referrals</p>
+                        <div class="value" id="total-refs">0</div>
+                    </div>
+                    <div>
+                        <p>Referral Bonus</p>
+                        <div class="value">₦ <span id="ref-bonus">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="withdrawal" class="section">
+            <h2 class="header-title">Secure Withdrawal</h2>
+            <div class="card" style="max-width: 500px;">
+                <p style="color: var(--gold); margin-bottom: 20px;">Available: ₦ <span class="withdraw-bal">0.00</span></p>
+                
+                <label>Bank Name</label>
+                <input type="text" placeholder="e.g. GTBank, Kuda, Zenith">
+                
+                <label>Bank Account Number</label>
+                <input type="number" placeholder="10 Digits">
+                
+                <label>Bank Holder Name</label>
+                <input type="text" placeholder="Account Name">
+                
+                <button class="btn" style="width: 100%;" onclick="processWithdrawal()">PROCESS</button>
+            </div>
+        </div>
+
+        <div id="leaderboard" class="section">
+            <h2 class="header-title">Global Leaderboard</h2>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Miner ID</th>
+                            <th>Total Gold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>#1</td><td>NM_88291</td><td>125,400</td></tr>
+                        <tr><td>#2</td><td>NM_11022</td><td>98,200</td></tr>
+                        <tr><td>#3</td><td>NM_00341</td><td>76,550</td></tr>
+                        <tr><td>#4</td><td>NM_77412</td><td>54,000</td></tr>
+                        <tr><td>#5</td><td>NM_22910</td><td>42,100</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // DATA PERSISTENCE INITIALIZATION
+        let userData = JSON.parse(localStorage.getItem('nairaMineData')) || {
+            gold: 0,
+            referrals: 0,
+            lastMinedTime: null,
+            userId
